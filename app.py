@@ -93,9 +93,9 @@ else:
 
 if st.button("Submit"):
     # Call the function from your_module with the selected language and question
-    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-    PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
-    PINECONE_API_ENV = os.environ.get('PINECONE_API_ENV') 
+    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+    PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
+    PINECONE_API_ENV = st.secrets["PINECONE_API_ENV"] 
 
     #Use OpenAI's embedding
     Embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)    
