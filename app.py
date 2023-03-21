@@ -6,7 +6,6 @@ import streamlit as st
 import langchain
 import openai
 from langchain.chat_models import ChatOpenAI
-from langchain import LLMChain
 from langchain import PromptTemplate
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -14,22 +13,12 @@ from langchain.prompts.chat import (
     AIMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
-from langchain.document_loaders import GoogleDriveLoader
 import os
 from langchain.vectorstores import Chroma, Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 import pinecone
 import os
-import fnmatch
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-import glob
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
-import time
 
 # Set a password
 password = st.text_input("Enter password:", value="", type="password")
