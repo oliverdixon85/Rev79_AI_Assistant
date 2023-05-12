@@ -20,6 +20,28 @@ import pinecone
 import os
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
+# Set a password
+password = st.text_input("Enter password:", value="", type="password")
+if password != "ThisIsStrong":
+    st.error("Incorrect password. Please try again.")
+    st.stop()
+
+st.header("Current System Template Prompt, i.e. instructions for how the assistant should respond")
+st.write("""Use the following pieces of context to answer the user's question. 
+    If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    Question are related to how project managemnet software works. The documentation seeks to help users naviagte and use the software.
+    Do not include "https://rev79" as a source. Source will always be longer URLs, for example, 
+    "https://rev79.freshdesk.com/en/support/solutions/articles/47001227676"
+    Answer the question in the following language, {language}. You have to include the "SOURCES" at all times regardless of the language used.
+    Translate the word "SOURCES" in the language that is being used and make sure the "SOURCES" are in a new line.
+    ALWAYS return a "SOURCES" part in your answer.
+    The "SOURCES" part should be a reference to the source of the document from which you got your answer.
+    ```
+    The answer is foo
+    SOURCES: xyz
+    ----------------
+    {summaries}""")
+
 st.title("Rev79 Knowledge Base Assistant")
 # Language selection
 languages = [
@@ -43,24 +65,30 @@ selected_language = st.selectbox("Select language:", languages)
 
 # Input question
 question = st.text_input("Enter your question:")
-
-system_template = """
-    You are a helpful AI assistant. Use the following pieces of context to answer the user's question. 
-    If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+# Custom prompt section
+if st.checkbox("Create custom system template prompt"):
+    system_template = st.text_input('''Enter system template instructions. In other words, give the assistant the instructions of how you'd like it to answer the questions. 
+    More detailed instructions will result in a better assistant. Disregard "language" and "summaries" seen in current template :''')
+    system_template=system_template + """
+    Answer the question in the following language, {language}.
+    ----------------
+    {summaries}"""
+else: 
+    system_template = """Use the following pieces of context to answer the user's question. 
+    If you don't know the answer, just say that you don't know, don't try to make up an answer.
     Question are related to how project managemnet software works. The documentation seeks to help users naviagte and use the software.
     Do not include "https://rev79" as a source. Source will always be longer URLs, for example, 
     "https://rev79.freshdesk.com/en/support/solutions/articles/47001227676"
-    Answer the question in the following language, {language}. You have to include the SOURCES at all times regardless of the language used.
-    Translate the word SOURCES in the language that is being used and make sure the SOURCES are in a new line.
-    Follow the examples below:
+    Answer the question in the following language, {language}. You have to include the "SOURCES" at all times regardless of the language used.
+    Translate the word "SOURCES" in the language that is being used and make sure the "SOURCES" are in a new line.
+    ALWAYS return a "SOURCES" part in your answer.
+    The "SOURCES" part should be a reference to the source of the document from which you got your answer.
     ```
-    Question: What is Rev79?
-    
-    Answer: The Rev79 platform is named after God's promise in Revelation 7:9 of all languages communities included in his eternal purposes of blessing and recreation. 
-    SOURCES: https://rev79.freshdesk.com/en/support/solutions/articles/47001223622-what-is-the-rev79-app-where-did-it-come-from-
-    ```
-    ----------------
+    The answer is foo
+    SOURCES: xyz
+     ----------------
     {summaries}"""
+    
 # Submit button
 
 if st.button("Submit"):
