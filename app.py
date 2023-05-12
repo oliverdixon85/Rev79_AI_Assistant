@@ -25,9 +25,11 @@ password = st.text_input("Enter password:", value="", type="password")
 if password == "ThisIsStrong":
     # Do stuff here for authenticated users
     st.write("You're in!")
+    # Rest of your application goes here
 else:
     if password:
         st.error("Incorrect password. Please try again.")
+        st.stop()
 
 st.title("Rev79 Knowledge Base Assistant")
 # Language selection
