@@ -22,25 +22,12 @@ from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
 # Set a password
 password = st.text_input("Enter password:", value="", type="password")
-if password != "ThisIsStrong":
-    st.error("Incorrect password. Please try again.")
-    st.stop()
-
-st.header("Current System Template Prompt, i.e. instructions for how the assistant should respond")
-st.write("""Use the following pieces of context to answer the user's question. 
-    If you don't know the answer, just say that you don't know, don't try to make up an answer.
-    Question are related to how project managemnet software works. The documentation seeks to help users naviagte and use the software.
-    Do not include "https://rev79" as a source. Source will always be longer URLs, for example, 
-    "https://rev79.freshdesk.com/en/support/solutions/articles/47001227676"
-    Answer the question in the following language, {language}. You have to include the "SOURCES" at all times regardless of the language used.
-    Translate the word "SOURCES" in the language that is being used and make sure the "SOURCES" are in a new line.
-    ALWAYS return a "SOURCES" part in your answer.
-    The "SOURCES" part should be a reference to the source of the document from which you got your answer.
-    ```
-    The answer is foo
-    SOURCES: xyz
-    ----------------
-    {summaries}""")
+if password == "ThisIsStrong":
+    # Do stuff here for authenticated users
+    st.write("You're in!")
+else:
+    if password:
+        st.error("Incorrect password. Please try again.")
 
 st.title("Rev79 Knowledge Base Assistant")
 # Language selection
@@ -65,27 +52,28 @@ selected_language = st.selectbox("Select language:", languages)
 
 # Input question
 question = st.text_input("Enter your question:")
-# Custom prompt section
-if st.checkbox("Create custom system template prompt"):
-    system_template = st.text_input('''Enter system template instructions. In other words, give the assistant the instructions of how you'd like it to answer the questions. 
-    More detailed instructions will result in a better assistant. Disregard "language" and "summaries" seen in current template :''')
-    system_template=system_template + """
-    Answer the question in the following language, {language}.
-    ----------------
-    {summaries}"""
-else: 
-    system_template = """Use the following pieces of context to answer the user's question. 
-    If you don't know the answer, just say that you don't know, don't try to make up an answer.
+ 
+system_template = """
+    You are a helpful AI Assistant. Use the following pieces of context to answer the user's question. 
+    If you don't know the answer, just say that you don't know. Don't try to make up an answer.
     Question are related to how project managemnet software works. The documentation seeks to help users naviagte and use the software.
     Do not include "https://rev79" as a source. Source will always be longer URLs, for example, 
     "https://rev79.freshdesk.com/en/support/solutions/articles/47001227676"
     Answer the question in the following language, {language}. You have to include the "SOURCES" at all times regardless of the language used.
     Translate the word "SOURCES" in the language that is being used and make sure the "SOURCES" are in a new line.
-    ALWAYS return a "SOURCES" part in your answer.
-    The "SOURCES" part should be a reference to the source of the document from which you got your answer.
+    
+    Example:
+ 
     ```
-    The answer is foo
-    SOURCES: xyz
+    Question: What is Rev79?
+    
+    Answer: Rev79 is a project management platform named after God's promise in Revelation 7:9 of all languages communities being included in his eternal purpose
+    of blessing and recreation. The platform aims to help organizations, teams, and communities move forward towards this vision by providing tools for 
+    managing projects and facilitating Bible translation and integral mission in all language communities. Rev79 can be used to envision, organize, collaborate, 
+    and transform projects and activities.
+    
+    SOURCES: https://rev79.freshdesk.com/en/support/solutions/articles/47001223622-what-is-the-rev79-app-where-did-it-come-from-
+    ```
      ----------------
     {summaries}"""
     
