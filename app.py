@@ -120,7 +120,7 @@ if st.button("Submit"):
     prompt = ChatPromptTemplate.from_messages(messages) 
 
     docsearch = Pinecone.from_existing_index(index_name=index_name, embedding=Embeddings)
-    docs = docsearch.similarity_search(question, include_metadata=True)
+    docs = docsearch.similarity_search(question)
     chain_type_kwargs = {"prompt": prompt}
     chain = load_qa_with_sources_chain(
         ChatOpenAI(model_name="gpt-4", openai_api_key=OPENAI_API_KEY), 
