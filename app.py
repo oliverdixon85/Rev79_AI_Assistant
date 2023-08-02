@@ -19,6 +19,8 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 import pinecone
 import os
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings, SentenceTransformerEmbeddings
 
 st.title("Rev79 Knowledge Base Assistant")
 # Language selection
@@ -63,7 +65,8 @@ system_template = """
     managing projects and facilitating Bible translation and integral mission in all language communities. Rev79 can be used to envision, organize, collaborate, 
     and transform projects and activities.
     
-    SOURCES: https://rev79.freshdesk.com/en/support/solutions/articles/47001223622-what-is-the-rev79-app-where-did-it-come-from-
+    SOURCES: 
+    - https://rev79.freshdesk.com/en/support/solutions/articles/47001223622-what-is-the-rev79-app-where-did-it-come-from-
     ```
      ----------------
     {summaries}"""
@@ -74,19 +77,17 @@ if st.button("Submit"):
     # Call the function from your_module with the selected language and question
     OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
     PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
-    PINECONE_API_ENV = st.secrets["PINECONE_API_ENV"] 
+    PINECONE_API_ENV = st.secrets["PINECONE_API_ENV"]
+    supabase_url = st.secrets["SUPABASE_URL"]
+    supabase_key = st.secrets["SUPABASE_KEY"]
 
     #Use OpenAI's embedding
-    Embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)    
+    Embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/stsb-xlm-r-multilingual')    
 
     # initialize pinecone
-    pinecone.init(
-        api_key=PINECONE_API_KEY,  # find at app.pinecone.io
-        environment=PINECONE_API_ENV  # next to api key in console
-    )
-    index_name = "rev79"  
+    supabase: Client = create_client(supabase_url, supabase_key)  
 
-    docsearch = Pinecone.from_existing_index(index_name=index_name, embedding=Embeddings)   
+    docsearch = SupabaseVectorStore(embedding=embeddings, table_name='documents', client=supabase)   
 
     st.markdown("Assistant is typing...")
 
@@ -98,7 +99,6 @@ if st.button("Submit"):
     ]
     prompt = ChatPromptTemplate.from_messages(messages) 
 
-    docsearch = Pinecone.from_existing_index(index_name=index_name, embedding=Embeddings)
     docs = docsearch.similarity_search(question)
     chain_type_kwargs = {"prompt": prompt}
     chain = load_qa_with_sources_chain(
