@@ -21,6 +21,8 @@ import os
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.embeddings import HuggingFaceEmbeddings, SentenceTransformerEmbeddings
+from supabase.client import Client, create_client
+from langchain.vectorstores import SupabaseVectorStore
 
 st.title("Rev79 Knowledge Base Assistant")
 # Language selection
