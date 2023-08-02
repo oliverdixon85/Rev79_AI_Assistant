@@ -3,3 +3,5 @@ openai
 streamlit
 pinecone-client
 beautifulsoup4
+sentence_transformers
+supabase
