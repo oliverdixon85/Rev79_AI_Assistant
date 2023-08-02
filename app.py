@@ -89,7 +89,7 @@ if st.button("Submit"):
     # initialize pinecone
     supabase: Client = create_client(supabase_url, supabase_key)  
 
-    docsearch = SupabaseVectorStore(embedding=embeddings, table_name='documents', client=supabase)   
+    docsearch = SupabaseVectorStore(embedding=Embeddings, table_name='documents', client=supabase)   
 
     st.markdown("Assistant is typing...")
 
